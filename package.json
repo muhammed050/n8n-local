@@ -1,12 +1,15 @@
 {
   "name": "n8n-local",
   "version": "1.0.0",
-  "description": "",
+  "description": "Self-hosted n8n instance",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "n8n start"
   },
-  "keywords": [],
+  "keywords": [
+    "n8n",
+    "automation"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
