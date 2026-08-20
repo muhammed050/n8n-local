@@ -1,7 +1,7 @@
 (() => {
   const URL = 'https://pbouvkzalxeragrpsotl.supabase.co';
   const KEY = window.SUPABASE_PUBLISHABLE_KEY || '';
-  let db = null, timer = null, code = null, busy = false;
+  let db = null, timer = null, code = null, busy = false, booted = false;
   const getDb = () => {
     if (!KEY || !window.supabase) return null;
     return db || (db = window.supabase.createClient(URL, KEY));
@@ -11,19 +11,20 @@
   const esc = s => String(s ?? '').replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));
 
   function ensureReadyUI() {
-    const battle = document.querySelector('.battle');
-    if (!battle || document.querySelector('#readyRoomPanel')) return;
+    const battle = document.querySelector('#battle .battle');
+    if (!battle || document.querySelector('#readyRoomPanel')) return false;
     const panel = document.createElement('div');
     panel.id = 'readyRoomPanel';
     panel.innerHTML = `
       <div class="ready-room-title">⚔️ ROOM READY</div>
       <div id="readyRoomCode" class="ready-room-code"></div>
       <div id="readyPlayers" class="ready-players"></div>
-      <button id="readyBtn" class="primary wide" type="button">READY ✓</button>
-      <div id="readyHint" class="hint">Both players must press READY. The battle starts together.</div>`;
+      <button id="readyBtn" class="primary wide" type="button">I AM READY ⚔️</button>
+      <div id="readyHint" class="hint">Waiting for both players…</div>`;
     const share = document.querySelector('#shareUrl');
     battle.insertBefore(panel, share || battle.firstChild);
     document.querySelector('#readyBtn').addEventListener('click', setReady);
+    return true;
   }
 
   async function fetchRoom() {
@@ -44,7 +45,7 @@
   function readyValue(m) { return !!m?.ready; }
 
   function paint(r) {
-    ensureReadyUI();
+    if (!ensureReadyUI()) return;
     const side = mySide(r);
     const cReady = readyValue(r?.creator);
     const oReady = readyValue(r?.opponent);
@@ -57,8 +58,9 @@
     if (codeEl) codeEl.textContent = r?.code ? `ROOM ${r.code}` : '';
     if (players) players.innerHTML = `<span>${cReady ? '🟢' : '⚪'} ${esc(r?.creator?.playerName || r?.creator?.raw || r?.creator?.name || 'Player 1')}</span><span>${oReady ? '🟢' : '⚪'} ${esc(r?.opponent?.playerName || r?.opponent?.raw || r?.opponent?.name || 'Player 2')}</span>`;
     if (btn) {
-      btn.disabled = !side || !bothPlayers || !!r?.finished || r?.status === 'finished' || (side === 'creator' ? cReady : oReady);
-      btn.textContent = (side === 'creator' ? cReady : oReady) ? 'READY ✓' : 'I AM READY ⚔️';
+      const mineReady = side === 'creator' ? cReady : side === 'opponent' ? oReady : false;
+      btn.disabled = !side || !bothPlayers || mineReady || r?.status === 'finished';
+      btn.textContent = mineReady ? 'READY ✓' : 'I AM READY ⚔️';
     }
     if (hint) {
       if (!bothPlayers) hint.textContent = 'Waiting for the second player to join the room…';
@@ -80,9 +82,8 @@
       const patch = side === 'creator' ? { creator: mine } : { opponent: mine };
       const { error } = await getDb().from('game_battles').update(patch).eq('code', r.code).neq('status','finished');
       if (error) throw error;
-      const latest = await fetchRoom();
-      paint(latest);
-    } catch (e) {
+      paint(await fetchRoom());
+    } catch (_) {
       const hint = document.querySelector('#readyHint');
       if (hint) hint.textContent = 'Could not update READY. Please try again.';
     } finally { busy = false; }
@@ -90,7 +91,6 @@
 
   async function startBattle(r) {
     if (r.status === 'ready' || r.status === 'finished') return;
-    // Only one client needs to flip the room to ready. Both clients will receive it.
     const { error } = await getDb().from('game_battles').update({ status: 'ready' }).eq('code', r.code).eq('status','waiting');
     if (!error) {
       const hint = document.querySelector('#readyHint');
@@ -100,28 +100,39 @@
 
   async function sync() {
     code = getCode();
+    ensureReadyUI();
     if (!code) return;
     const r = await fetchRoom();
     if (!r) return;
     paint(r);
     if (r.status === 'ready' && r.creator && r.opponent) {
-      // Let the existing battle engine render the synchronized fight.
       window.room = r;
       if (typeof window.renderFight === 'function') window.renderFight(r);
     }
   }
 
   function boot() {
+    const newCode = getCode();
+    if (newCode && newCode !== code) {
+      code = newCode;
+      clearInterval(timer);
+      timer = setInterval(sync, 800);
+    }
     ensureReadyUI();
-    code = getCode();
-    if (!code) return;
-    clearInterval(timer);
     sync();
-    timer = setInterval(sync, 800);
+    booted = true;
   }
+
+  // app.js changes screens without changing the URL, so MutationObserver is required.
+  const observer = new MutationObserver(() => {
+    const battle = document.querySelector('#battle.active');
+    if (battle) boot();
+  });
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
   window.addEventListener('hashchange', boot);
   window.addEventListener('pageshow', boot);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) boot(); });
-  setTimeout(boot, 700);
-  setTimeout(boot, 1800);
+  setTimeout(boot, 300);
+  setTimeout(boot, 1000);
+  setTimeout(boot, 2000);
 })();
