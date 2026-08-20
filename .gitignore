@@ -1,9 +1,0 @@
-node_modules/
-.n8n/
-data/
-.env
-.env.*
-!.env.example
-*.log
-dist/
-build/
