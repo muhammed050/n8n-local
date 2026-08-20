@@ -1,4 +1,3 @@
 // Supabase public runtime configuration.
-// Replace the placeholder locally or via your deployment process with the project's
-// publishable/anon key. This key is safe for browser use only when Supabase RLS is configured.
-window.SUPABASE_PUBLISHABLE_KEY = window.SUPABASE_PUBLISHABLE_KEY || 'YOUR_SUPABASE_PUBLISHABLE_KEY';
+// This is a publishable/anon browser key; Supabase RLS must protect database writes.
+window.SUPABASE_PUBLISHABLE_KEY = window.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_6q3op1_SHPm1j_bd8KSDYQ_Anycaiwg';
