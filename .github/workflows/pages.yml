@@ -17,10 +17,6 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-      # game-test must be allowed by the repository's github-pages environment policy
     steps:
       - name: Checkout
         uses: actions/checkout@v5
