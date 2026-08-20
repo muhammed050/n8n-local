@@ -1,39 +1,35 @@
 name: Deploy static game to GitHub Pages
-
 on:
   push:
     branches: [game-test]
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
   group: pages
   cancel-in-progress: true
-
 jobs:
   deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+      # game-test must be allowed by the repository's github-pages environment policy
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
-        with:
-          enablement: true
-
       - name: Upload static site
         uses: actions/upload-pages-artifact@v4
         with:
           path: .
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
