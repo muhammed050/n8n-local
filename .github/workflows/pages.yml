@@ -22,6 +22,12 @@ jobs:
         uses: actions/checkout@v5
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
+      - name: Inject Supabase runtime config
+        env:
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          test -n "$SUPABASE_PUBLISHABLE_KEY"
+          printf '%s\n' "window.SUPABASE_PUBLISHABLE_KEY = '$SUPABASE_PUBLISHABLE_KEY';" > config.js
       - name: Upload static site
         uses: actions/upload-pages-artifact@v4
         with:
