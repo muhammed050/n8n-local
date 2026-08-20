@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#09090b" />
+  <meta name="description" content="Create a ridiculous character, challenge a friend, and share the result." />
+  <meta property="og:title" content="WHO ARE YOU? — Create Your Monster" />
+  <meta property="og:description" content="Create a ridiculous character and challenge your friends." />
+  <title>WHO ARE YOU? — Character Battle</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="topbar"><div class="logo">WHO<span>?</span></div><div class="pill">BETA · 5 SEC CHAOS</div></header>
+    <section id="home" class="screen active">
+      <div class="hero"><div class="eyebrow">THE INTERNET NEEDS YOUR MONSTER</div><h1>MAKE A<br><em>WEIRD ONE.</em></h1><p>Turn any name into a ridiculous battle character. No account. No rules. Just chaos.</p><button class="primary" id="createBtn">CREATE MY CHARACTER <span>→</span></button><div class="mini">⚡ takes 5 seconds · 🔗 shareable · 🆓 free</div></div>
+      <div class="showcase"><div class="card tilt-a"><div class="avatar">🦝</div><b>RACCOONI<br>SUPREMO</b><small>POWER 91 · CHAOS 99</small></div><div class="card tilt-b"><div class="avatar">🧃</div><b>JUICINI<br>WARRIOR</b><small>POWER 76 · LUCK 100</small></div></div>
+    </section>
+    <section id="create" class="screen"><div class="panel"><div class="step">STEP 01 / 02</div><h2>What should<br>we call you?</h2><p>Real name, nickname, pet, whatever.</p><input id="nameInput" maxlength="24" placeholder="e.g. Muhammed" autocomplete="off" /><button class="primary wide" id="generateBtn">GENERATE MY MONSTER ⚡</button><button class="ghost" data-home>← back</button></div></section>
+    <section id="result" class="screen"><div class="result-wrap"><div class="result-head"><span>YOUR CREATION</span><button class="ghost" data-home>START OVER</button></div><article class="monster-card"><div class="rarity" id="rarity">LEGENDARY</div><div class="monster-emoji" id="monsterEmoji">🦝</div><h2 id="monsterName">RACCOONI SUPREMO</h2><p id="monsterLore">A mysterious creature with absolutely no business being this powerful.</p><div class="stats"><div><span>POWER</span><b id="power">91</b></div><div><span>CHAOS</span><b id="chaos">99</b></div><div><span>LUCK</span><b id="luck">73</b></div><div><span>AURA</span><b id="aura">88</b></div></div><button class="primary wide" id="challengeBtn">⚔️ CHALLENGE A FRIEND</button><button class="secondary wide" id="shareBtn">↗ SHARE MY MONSTER</button></article></div></section>
+    <section id="battle" class="screen"><div class="battle"><div class="step">CHALLENGE SENT</div><h2>Can they<br><em>beat you?</em></h2><div class="versus"><div class="fighter"><div id="battleEmoji">🦝</div><b id="battleName">YOUR MONSTER</b><small id="battlePower">POWER 91</small></div><strong>VS</strong><div class="fighter mystery"><div>❓</div><b>THEIR MONSTER</b><small>UNKNOWN</small></div></div><div class="share-box"><b>Send this challenge:</b><div id="shareUrl">whoareyou.local/challenge</div></div><button class="primary wide" id="copyBtn">COPY CHALLENGE LINK 🔗</button><button class="ghost" data-home>← create another</button></div></section>
+  </main>
+  <footer>Built for fun · Share responsibly · <span>WHO?</span></footer>
+  <script src="app.js"></script>
+</body>
+</html>
